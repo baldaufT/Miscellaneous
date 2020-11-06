@@ -1,7 +1,7 @@
 import pickle
 from roulette import Player
 
-investedCapital, minBet, strikeInRowNeeded, players, playRounds = 635, 5, 5, 10000, 10000
+investedCapital, minBet, strikeInRowNeeded, players, playRounds = 635, 5, 5, 10000, 1000
 
 P1 = [Player(investedCapital, minBet) for i in range(players)]
 Results, moneyToPlay, gameOver, gameOverQuote, maxStrike, maxLoss, turnover, totalmaxLoss, h1, count = [], 0, 0, 0, 0, 0, 0, 0, players/20, 0
