@@ -42,7 +42,6 @@ class Player():
 
     def play(self, roundsToPlay = 100, times = 2, lotPlayerAnalysis = False, strikeInRow = 5):
         # return of -1 is best case (no out of money), otherwise number indicates the round of failure
-        self.strikeInRow = strikeInRow
         roundResult, currLoss, currStrike, last = 0, 0, 0, 0
         currInvest = self.minBet
         if self.minBet > self.moneyToPlay:
@@ -56,7 +55,7 @@ class Player():
             if self.strike == 0 or last == roundResult:
                 self.strike += 1
 
-            if self.strike >= self.strikeInRow:
+            if self.strike >= strikeInRow:
                 self.turnover += currInvest
                 if not roundResult == last:
                     self.investments += 1
@@ -87,7 +86,7 @@ class Player():
 # For analysis
 if __name__ == '__main__':
     # change these values, but not more in this file
-    investedCapital, minBet, strikeInRow, players, playRounds = 315, 5, 0, 1000, 1000
-    P1 = Player(investedCapital, minBet, strikeInRow)
-    P1.play(roundsToPlay = playRounds, lotPlayerAnalysis = True)
+    investedCapital, minBet, sIR, players, playRounds = 315, 5, 0, 1000, 1000
+    P1 = Player(investedCapital, minBet)
+    P1.play(roundsToPlay = playRounds, lotPlayerAnalysis = True, strikeInRow = sIR)
     print(P1.getResults())
