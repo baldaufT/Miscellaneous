@@ -32,23 +32,18 @@ class Roulette:
 class Player():
 
     R1 = Roulette()
-    turnover, maxStrike, maxLoss = 0, 0, 0
+    turnover, maxStrike, maxLoss, investments, gameOver, strike = 0, 0, 0, 0, -1, 0
     toNum = {"RED" : 0,"BLACK" : 1}
-    gameOver = -1
 
-    def __init__(self, investedCapital = 315, minBet = 5, strikeInRow = 5, betOn = 0):
+    def __init__(self, investedCapital = 315, minBet = 5):
         self.minBet = minBet
         self.investedCapital = investedCapital
         self.moneyToPlay = investedCapital
-        self.strikeInRow = strikeInRow
-        if isinstance(betOn, str):
-            self.betOn = self.toNum.get(betOn.upper())
-        else:
-            self.betOn = betOn
 
-    def play(self, roundsToPlay = 100, times = 2, lotPlayerAnalysis = False):
+    def play(self, roundsToPlay = 100, times = 2, lotPlayerAnalysis = False, strikeInRow = 5):
         # return of -1 is best case (no out of money), otherwise number indicates the round of failure
-        roundResult, currLoss, currStrike = 0, 0, 0
+        self.strikeInRow = strikeInRow
+        roundResult, currLoss, currStrike, last = 0, 0, 0, 0
         currInvest = self.minBet
         if self.minBet > self.moneyToPlay:
             if not lotPlayerAnalysis:
@@ -58,26 +53,31 @@ class Player():
 
         for r in range(roundsToPlay):
             roundResult = self.R1.play()
-            self.turnover += currInvest
+            if self.strike == 0 or last == roundResult:
+                self.strike += 1
 
-            if roundResult == self.betOn:
-                self.moneyToPlay += currInvest
-                currInvest = self.minBet
-                currStrike += 1
-                if currLoss > self.maxLoss:
-                    self.maxLoss = currLoss
-                currLoss = 0
-            else:
-                self.moneyToPlay -= currInvest
-                currInvest *= times
-                currLoss += 1
-                if currStrike > self.maxStrike:
-                    self.maxStrike = currStrike
-                currStrike = 0
+            if self.strike >= self.strikeInRow:
+                self.turnover += currInvest
+                if not roundResult == last:
+                    self.investments += 1
+                    self.moneyToPlay += currInvest
+                    currInvest = self.minBet
+                    currStrike += 1
+                    if currLoss > self.maxLoss:
+                        self.maxLoss = currLoss
+                    currLoss= 0
+                else:
+                    self.moneyToPlay -= currInvest
+                    currInvest *= times
+                    currLoss += 1
+                    if currStrike > self.maxStrike:
+                        self.maxStrike = currStrike
+                    currStrike = 0
 
-            if currInvest > self.moneyToPlay:
-                self.gameOver = r + 1
-                return self.gameOver
+                if currInvest > self.moneyToPlay:
+                    self.gameOver = r + 1
+                    return self.gameOver
+            last = roundResult
         return -1
     
     def getResults(self):
